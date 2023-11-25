@@ -1,0 +1,336 @@
+create database MetroFlowApp10	
+USE MetroFlowApp10
+go
+
+--Table Usuarios --- v1
+create table Usuarios(
+	dni varchar(8) not null,
+	nombres varchar(100) not null,
+	apellidos varchar(100) not null,
+	correo varchar(100) not null,
+	numero char(9) not null,
+	fecha_registro DATE not null,
+	contrasena varchar(25) not null, 
+	CONSTRAINT Usuario_pk Primary Key(dni)
+);
+go
+
+-- Table Tarjetas -- v1
+
+Create table Tarjetas(
+	id varchar(8) not null,
+	fecha_emision date not null,
+	saldo decimal,
+	usuario_dni varchar(8) not null, --FK
+	CONSTRAINT Tarjeta_pk Primary Key(id),
+	CONSTRAINT Tarjeta_fk foreign key (usuario_dni) references   Usuarios(dni)
+);
+go
+
+-- table transportes --- v1
+
+Create table Transportes(
+	nombre varchar(50) not null,
+	tipo_transporte varchar(100) not null,
+	CONSTRAINT transporte_pk Primary Key(nombre)
+);
+go
+
+-- Table Viajes --- v1
+Create table Viajes(
+	id_viaje int identity (1,1) not null,
+	fecha date,
+	nombre_transporte varchar(50) not null,
+	usuario_dni varchar(8) not null,
+	CONSTRAINT Viajes_pk Primary Key(id_viaje),
+	CONSTRAINT Viajes_fk foreign key(nombre_transporte) references Transportes(nombre),
+	CONSTRAINT Viajes_fk2 foreign key(usuario_dni) references Usuarios(dni)
+);
+go
+
+-- table Tarjetas_credito_debito --- v1
+Create table Tarjetas_credito_debito(
+	numero bigint not null,
+	nombre_dueno varchar(100) not null,
+	pago_carga Decimal not null,
+	fecha_vencimiento DATE not null,
+	numero_posterior char(3) not null, --Ponerle char en el doc
+	CONSTRAINT tarjeta_credito_debito_pk Primary Key(numero)
+);
+go
+
+-- table Billeteras_virtuales --- v1
+Create table Billeteras_virtuales(
+	id_billetera_virtual int identity(1,1) not null,
+	nombre varchar(45) not null,
+	saldo decimal not null,
+	CONSTRAINT billetera_virtual_pk Primary Key(id_billetera_virtual)
+);
+go
+
+
+-- table Asesores --- v1
+Create table Asesores(
+	id int identity(1,1) not null,
+	nombre varchar(100) not null,
+	apellidos varchar(100) not null,
+	CONSTRAINT asesores_pk Primary Key(id)
+);
+go
+
+-- table Rutas v1
+
+Create table Rutas(
+	id_ruta int not null,
+	nombre_ruta varchar(100),
+	inicio varchar(100),
+	fin varchar (100),
+	nombre_trasporte varchar(50),
+	CONSTRAINT Rutas_pk Primary Key(id_ruta),
+	CONSTRAINT Rutas_fk Foreign Key(nombre_trasporte) references Transportes(nombre)
+);
+go 
+
+-- table Reclamos v1
+Create table Reclamos(
+	id int identity(1,1) not null,
+	usuario_dni varchar(8) not null,
+	id_asesor int not null,
+	fecha DATE not null,
+	hora TIME not null,
+	estado varchar(100),
+	telefono int not null,
+	descripcion text not null,
+	CONSTRAINT Reclamos_pk Primary Key(id),
+	CONSTRAINT Reclamos_fk Foreign Key(usuario_dni) references Usuarios(dni),
+	CONSTRAINT Reclamos_fk2 Foreign Key(id_asesor) references Asesores(id)
+);
+go
+
+-- table Transportes_favoritos v1
+
+Create table Transportes_favoritos(
+	nombre_transporte varchar(50), --FK
+	usuario_dni varchar(8), -- FK
+	CONSTRAINT Transportes_favoritos_pk Primary Key(nombre_transporte, usuario_dni),
+	CONSTRAINT Transportes_favoritos_fk Foreign Key(nombre_transporte) references Transportes(nombre),
+	CONSTRAINT Transportes_favoritos_fk2 Foreign Key(usuario_dni) references Usuarios(dni),
+);
+go
+
+-- Table Recargas v3
+
+
+INSERT INTO Usuarios VALUES 
+('12345678', 'Nestor', 'Ramirez', 'nramirez@gmail.com', '999456789', '2023-01-01', 'rotsen'),
+('23456789', 'Jana', 'Valderrama', 'jvalderrama@gmail.com', '987654321', '2023-02-02', 'anaj'),
+('34567890', 'Bianca', 'Castaño', 'bcastaño@gmail.com', '999789012', '2023-03-03', 'acnaib'),
+('45678901', 'Alicia', 'Sevilla', 'asevilla@gmail.com', '999012345', '2023-04-04', 'aicila'),
+('56789012', 'Carlos', 'Areche', 'careche@gmail.com', '999987654', '2023-05-05', 'solrac'),
+('67890123', 'Eva', 'Osorio', 'eosorio@gmail.com', '999210987', '2023-06-06', 'soave'),
+('78901234', 'David', 'Huaman', 'dhuaman@hotmail.com', '999543210', '2023-07-07', 'divad'),
+('89012345', 'Gino', 'Martinez', 'gmartinez@hotmail.com', '999098765', '2023-08-08', 'onig'),
+('90123456', 'Frank', 'Garcia', 'fgarcia@hotmail.com', '999321098', '2023-09-09', 'knarf'),
+('01234567', 'Hugo', 'Gavilano', 'hgavilano@hotmail.com', '989654321', '2023-10-10', 'oguh');
+
+INSERT INTO Tarjetas VALUES 
+('T1234567', '2023-01-01', 100.00, '12345678'),
+('T2345678', '2023-02-02', 150.00, '23456789'),
+('T3456789', '2023-03-03', 200.00, '34567890'),
+('T4567890', '2023-04-04', 50.00, '45678901'),
+('T5678901', '2023-05-05', 80.00, '56789012'),
+('T5678902', '2023-05-05', 80.00, '56789012'),
+('T6789012', '2023-06-06', 120.00, '67890123'),
+('T7890123', '2023-07-07', 30.00, '78901234'),
+('T8901234', '2023-08-08', 60.00, '89012345'),
+('T9012345', '2023-09-09', 90.00, '90123456'),
+('T0123456', '2023-10-10', 11.00, '01234567');
+
+INSERT INTO Transportes VALUES 
+('A', 'Normal'),
+('B', 'Normal'),
+('C', 'Normal'),
+('D', 'Normal'),
+('Expreso1', 'Expreso'),
+('Expreso2', 'Expreso'),
+('Expreso3', 'Expreso'),
+('Expreso4', 'Expreso'),
+('Expreso5', 'Expreso'),
+('Expreso6', 'Expreso'),
+('Expreso7', 'Expreso'),
+('Expreso8', 'Expreso'),
+('Expreso9', 'Expreso'),
+('SX', 'Expreso'),
+('SXN', 'Expreso'),
+('Lechucero', 'Normal');
+
+INSERT INTO Viajes (fecha, nombre_transporte, usuario_dni) VALUES 
+('2023-01-15', 'A', '12345678'),
+('2023-06-15', 'A', '12345678'),
+('2023-02-20', 'B', '23456789'),
+('2023-03-25', 'C', '34567890'),
+('2023-04-30', 'D', '45678901'),
+('2023-05-05', 'Expreso1', '56789012'),
+('2023-06-10', 'Expreso2', '67890123'),
+('2023-07-15', 'Expreso3', '78901234'),
+('2023-08-20', 'Expreso4', '89012345'),
+('2023-09-25', 'Expreso5', '90123456'),
+('2023-10-30', 'Expreso6', '01234567');
+
+INSERT INTO Tarjetas_credito_debito (numero, nombre_dueno, pago_carga, fecha_vencimiento, numero_posterior) VALUES 
+(1234567890123456, 'Nestor Ramirez', 50.00, '2024-01-01', '123'),
+(2345678901234567, 'Jana Valderrama', 80.00, '2024-02-02', '456'),
+(3456789012345678, 'Bianca Castaño', 120.00, '2024-03-03', '789'),
+(4567890123456789, 'Alicia Sevilla', 30.00, '2024-04-04', '012'),
+(5678901234567890, 'Carlos Areche', 45.00, '2024-05-05', '345'),
+(6789012345678901, 'Eva Osorio', 70.00, '2024-06-06', '678'),
+(7890123456789012, 'David Huaman', 20.00, '2024-07-07', '901'),
+(8901234567890123, 'Gino Martinez', 35.00, '2024-08-08', '234'),
+(9012345678901234, 'Frank Garcia', 55.00, '2024-09-09', '567'),
+(9876543210987654, 'Hugo Gavilano', 10.00, '2024-10-10', '890');
+
+INSERT INTO Billeteras_virtuales (nombre, saldo) VALUES 
+('Yape_Nestor', 300.00),
+('Plin_Jana', 400.00),
+('Plin_Bianca', 500.00),
+('Yape_Alicia', 200.00),
+('Plin_Carlos', 300.00),
+('Plin_Eva', 400.00),
+('Plin_David', 150.00),
+('Yape_Gino', 200.00),
+('Yape_Frank', 250.00),
+('Yape_Hugo', 100.00);
+select * from Billeteras_virtuales
+
+
+INSERT INTO Asesores (nombre, apellidos) VALUES 
+('Javier', 'González'),
+('Ana', 'Martínez'),
+('Carlos', 'Rodríguez'),
+('María', 'López'),
+('Alejandro', 'Pérez'),
+('Laura', 'Gómez'),
+('Francisco', 'Hernández'),
+('Isabel', 'Díaz'),
+('Diego', 'Moreno'),
+('Elena', 'Sánchez');
+
+INSERT INTO Rutas (id_ruta, nombre_ruta, inicio, fin, nombre_trasporte) VALUES 
+(1, 'Ruta1', 'Uni', 'Colmena', 'A'),
+(2, 'Ruta2', 'Estadio Union', 'Matellini', 'B'),
+(3, 'Ruta3', 'Angamos', 'Balta', 'C'),
+(4, 'Ruta4', 'Izaguirre', 'Caqueta', 'D'),
+(5, 'Ruta5', 'Estacio Nacional', 'Angamos', 'Expreso1'),
+(6, 'Ruta6', 'Naranjal', 'Canada', 'Expreso2'),
+(7, 'Ruta7', 'Naranjal', 'Angamos', 'Expreso3'),
+(8, 'Ruta8', 'Tomas Valle', 'Dos de Mayo', 'Expreso4'),
+(9, 'Ruta9', 'Tomas Valle', 'Plaza de Flores', 'Expreso5'),
+(10, 'Ruta10', 'Independencia', 'Central', 'Expreso6');
+
+INSERT INTO Reclamos (usuario_dni, id_asesor, fecha, hora, estado, telefono, descripcion) VALUES 
+('12345678', 1, '2023-01-02', '12:30:00', 'Resuelto', 987654321, 'Problema con la lectura de tarjeta'),
+('23456789', 2, '2023-02-03', '14:45:00', 'Pendiente', 999012345, 'Tarjeta perdida durante el viaje'),
+('34567890', 3, '2023-03-04', '16:20:00', 'Resuelto', 999987654, 'Discrepancia en la facturación'),
+('45678901', 4, '2023-04-05', '10:10:00', 'Pendiente', 999543210, 'Retraso en la recarga'),
+('56789012', 5, '2023-05-06', '08:15:00', 'Resuelto', 999210987, 'Transacción no autorizada'),
+('67890123', 6, '2023-06-07', '09:30:00', 'Pendiente', 999654321, 'Tarjeta robada'),
+('78901234', 7, '2023-07-08', '17:45:00', 'Resuelto', 999098765, 'Problema con la aplicacion'),
+('89012345', 8, '2023-08-09', '11:55:00', 'Pendiente', 999321098, 'Reduccion de saldo fraudulenta'),
+('90123456', 9, '2023-09-10', '13:40:00', 'Resuelto', 989654321, 'Monto de facturación incorrecto'),
+('01234567', 10, '2023-10-11', '15:00:00', 'Pendiente', 989654321, 'Tarjeta dañada');
+
+INSERT INTO Transportes_favoritos (nombre_transporte, usuario_dni) VALUES 
+('A', '12345678'),
+('B', '23456789'),
+('C', '34567890'),
+('A', '45678901'),
+('Expreso9', '56789012'),
+('Expreso8', '67890123'),
+('Expreso7', '78901234'),
+('Expreso5', '89012345'),
+('Expreso3', '90123456'),
+('Expreso1', '01234567');
+go
+
+--1. Retorna el nombre y el tipo de Bus más usado entre los usuarios en un determinado año.
+create view VScript1
+as
+select nombre_transporte, tipo_transporte, count(id_viaje) as Total, year(fecha) as Year
+from Viajes as V
+join Transportes as T on T.nombre = V.nombre_transporte
+group by nombre_transporte, tipo_transporte, year(fecha)
+go
+select * from VScript1
+go
+create function FScript1(@Year int) returns table
+return
+select * from VScript1
+where Year = @Year and Total = (select max(Total) from VScript1 where Year = @Year)
+go
+select * from dbo.FScript1(2023)
+go
+
+--2. Mostrar el nombre y cantidad de viajes del usuario que más viajes ha realizado durante un año.
+create view VScript2
+as
+select count(id_viaje) as Total, U.nombres , year(fecha) as Year
+from Viajes as V
+join Usuarios as U on U.dni = V.usuario_dni
+group by U.nombres, year(Fecha)
+go
+select * from VScript2
+go
+create procedure USPScript2
+@Year int
+as
+begin
+select Total, nombres, Year
+from VScript2
+where Year = @Year and Total = (select max(Total) from VScript2)
+end
+go
+exec USPScript2 @Year = 2023
+go
+
+--3. Obtener una lista de personas que han hecho un reclamo un un asesor en específico
+create procedure USPScript3 (@Asesor varchar(100))
+as
+begin
+select nombres, nombre
+from Usuarios as U
+join Reclamos as R on U.dni = R.usuario_dni
+join Asesores as A on A.id = R.id_asesor
+where nombre = @Asesor
+end
+exec USPScript3 @Asesor = 'Isabel'
+go
+--4. Mostrar el nombre de usuario, el nombre del bus y el tipo de bus en un viaje realizado
+create view VScript4
+as
+select nombres as NombreUsuario, T.nombre as NombreBus, tipo_transporte as TipoBus
+from Usuarios as U
+join Viajes as V on U.dni = V.usuario_dni
+join Transportes as T on V.nombre_transporte = T.nombre
+--group by nombres as NombreUsuario, tipo_transporte as TipoTransporte, id_viaje, fecha
+go
+select * from VScript4
+go
+--5. Retornar el nombre y apellido de los usuarios que tengan más de una tarjeta registrada con su dni en un mismo año
+create view VScript5
+as
+select dni, concat(nombres, apellidos) as Usuario, count(id) AS CantidadTarjetas, Year(T.fecha_emision) AS Year
+from Tarjetas as T
+join Usuarios as U on U.dni = T.usuario_dni
+group by U.dni, concat(U.nombres, U.apellidos), year(T.fecha_emision);
+go
+select * from VScript5
+
+create function FScript5(@Year int) returns table
+as
+return
+select * from VScript5
+where Year = @Year and CantidadTarjetas > 1
+
+select * from dbo.FScript5(2023)
+go
+
